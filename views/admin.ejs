@@ -1,0 +1,100 @@
+<!DOCTYPE html> 
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>FOSSCOMM 2011 - Now Happening - Admin</title>
+	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.0a3/jquery.mobile-1.0a3.min.css" />
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.5.min.js"></script>
+    <script type="text/javascript" src="http://code.jquery.com/mobile/1.0a3/jquery.mobile-1.0a3.min.js"></script>
+    <script type="text/javascript" src="http://localhost:8000/socket.io/socket.io.js"></script>
+    <script type="text/javascript">
+    $(document).ready(function() {
+        var socket = new io.Socket('localhost', { port: 8000 });
+        socket.connect();
+        
+        //socket.on('connect', function() {});
+
+        socket.on('message', function(data) {
+            var msg = JSON.parse(data);
+            if (msg.event = 'add') {
+                $('#current-sessions').append('<li id="' + msg.id + '">'
+                    + '<h3><a>' + msg.data.speaker + '</a></h3>'
+                    + '<p><strong>' + msg.data.title + '</strong></p>'
+                    + '<p class="ui-li-aside"><strong>' + msg.data.location + '</strong></p>'
+                    + '<a class="delete" data-rel="dialog" data-transition="slideup">Delete</a>'
+                    + '</li>'
+                );
+                $("#current-sessions").listview("refresh");
+            }
+        });
+
+        socket.on('disconnect', function(){
+            console.log('disconnected');
+        });
+
+        $("#current-sessions li a.delete").live('click', function() {
+            var msg = {
+                event: "delete",
+                id: $(this).parent().attr("id")
+            };
+            $('li#' + msg.id).hide();
+            socket.send(JSON.stringify(msg));
+        });
+
+        $("#all-sessions li a.add").live('click', function() {
+            var msg = {
+                event: "add",
+                id: $(this).parent().parent().parent().parent().attr('id')
+            };
+            socket.send(JSON.stringify(msg));
+            $.mobile.changePage("#home");
+        });
+    });
+    </script>
+</head>
+
+<body>
+    <div data-role="page" data-theme="d" id="home">
+        
+        <div data-role="header" data-theme="a">
+            <h1>Update Sessions</h1>
+            <a href="#add" data-role="button" data-icon="plus">Add</a>
+        </div>
+        
+        <div data-role="content">
+    		<ul id="current-sessions" data-role="listview" data-split-icon="delete" data-split-theme="d">
+    			<li data-role="list-divider">Now Happening - Edit</li>
+    			<% for (var key in cursessions) { %>
+                    <li id="<%= key %>">
+                        <h3><a><%= JSON.parse(cursessions[key]).speaker %></a></h3>
+                        <p><strong><%= JSON.parse(cursessions[key]).title %></strong></p>
+                        <p class="ui-li-aside"><strong><%= JSON.parse(cursessions[key]).location %></strong></p>
+                        <a class="delete" data-rel="dialog" data-transition="slideup">Delete</a>
+                    </li>
+                <% } %>                
+    		</ul>
+    	</div>
+        
+    </div>
+
+    <div data-role="page" data-theme="d" id="add">
+
+        <div data-role="header" data-theme="b"> 
+    		<h1>All presentations</h1> 
+    	</div>
+
+    	<div data-role="content">
+            <ul id="all-sessions" data-role="listview">
+                <li data-role="list-divider">Saturday, May 7<span class="ui-li-count">25</span></li> 
+                <% for (var key in allsessions) { %>
+                    <li id="<%= key %>">
+                        <h3><a class="add"><%= JSON.parse(allsessions[key]).speaker %></a></h3>
+                        <p><strong><%= JSON.parse(allsessions[key]).title %></strong></p>
+                        <p class="ui-li-aside"><strong><%= JSON.parse(allsessions[key]).location %></strong></p>
+                    </li>
+                <% } %>                
+		    </ul>		
+        </div>
+    </div>
+</body>
+</html>

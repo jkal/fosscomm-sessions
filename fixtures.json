@@ -1,0 +1,15 @@
+[{
+  "title": "Cool presentation",
+  "speaker": "J. Random Hacker",
+  "location": "B4"
+},
+{
+  "title": "Whatever",
+  "speaker": "John Doe",
+  "location": "BA"
+},
+{
+  "title": "Something else",
+  "speaker": "Speaker",
+  "location": "BA"
+}]
