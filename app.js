@@ -23,13 +23,17 @@ socket.on('connection', function(client) {
 
         if (message.event == 'add') {
             db.hget('fosscomm2011:sessions:all', message.id, function(err, data) {
-                db.hset('fosscomm2011:sessions:current', message.id, data);
-                var reply = {
-                    event: 'add',
-                    id: message.id,
-                    session: JSON.parse(data)
-                };
-                socket.broadcast(JSON.stringify(reply));
+                db.hexists('fosscomm2011:sessions:current', message.id, function (err, reply) {
+                    if (!reply) {
+                        db.hsetnx('fosscomm2011:sessions:current', message.id, data);
+                        var reply = {
+                            event: 'add',
+                            id: message.id,
+                            session: JSON.parse(data)
+                        };
+                        socket.broadcast(JSON.stringify(reply));
+                    };
+                });
             });
         };
     });
