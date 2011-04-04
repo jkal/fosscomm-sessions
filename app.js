@@ -11,6 +11,10 @@ server.listen(8000);
 var socket = io.listen(server); 
 var db = redis.createClient();
 
+db.on('error', function (err) {
+    console.log(err.message);
+});
+
 socket.on('connection', function(client) {
 
     client.on('message', function (data) {
