@@ -1,0 +1,53 @@
+<!DOCTYPE html> 
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>FOSSCOMM 2011 - Now Happening</title>
+	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.0a3/jquery.mobile-1.0a3.min.css" />
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.5.min.js"></script>
+    <script type="text/javascript" src="http://code.jquery.com/mobile/1.0a3/jquery.mobile-1.0a3.min.js"></script>
+    <script type="text/javascript" src="http://localhost:8000/socket.io/socket.io.js"></script>
+    <script type="text/javascript">
+    $(document).ready(function() {
+        var socket = new io.Socket('localhost', { port: 8000 });
+
+        socket.connect();
+        
+        socket.on('message', function(data) {
+            var message = JSON.parse(data);
+
+            if (message.event == 'delete') {
+                $('li#' + message.id).hide();
+            };
+            
+            if (message.event == 'add') {
+                $('#sessions').append('<li id="' + message.id + '">'
+                    + '<h3>' + message.session.speaker + '</h3>'
+                    + '<p><strong>' + message.session.title + '</strong></p>'
+                    + '<p class="ui-li-aside"><strong>' + message.session.location + '</strong></p>'
+                    + '</li>'
+                );
+                $('#sessions').listview('refresh');
+            };
+        });
+    });
+    </script>
+</head>
+    
+<body>
+    <div data-role="page" data-theme="d" id="home">
+        <div data-role="content">
+    	    <ul id="sessions" data-role="listview" data-theme="c" data-dividertheme="b">
+    			<li data-role="list-divider">Now Happening</li>
+                {% for k, v in sessions.items() %}
+                    <li id="{{ k }}">
+                        <h3>{{ v.speaker }}</h3>
+                        <p><strong>{{ v.title }}</strong></p>
+                        <p class="ui-li-aside"><strong>{{ v.location }}</strong></p>
+                    </li>                    
+                {% endfor %}    			
+    		</ul>    	
+    	</div>
+    </div>
+</body>
+</html>

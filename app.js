@@ -1,55 +1,37 @@
-var express = require('express'),
+var http = require('http'),
     io = require('socket.io'),
-    redis = require("redis");
+    redis = require('redis');
 
-var app = express.createServer();
+server = http.createServer(function(req, res) {
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.end('O Hai.');
+});
+server.listen(8000);
+  
+var socket = io.listen(server); 
 var db = redis.createClient();
 
-app.configure(function() {
-    app.set('views', __dirname + '/views');
-    app.set('view engine', 'ejs');
-    app.set('view options', { layout: false });
-    app.use(express.bodyDecoder());
-    app.use(express.methodOverride());
-    app.use(app.router);
-    app.use(express.staticProvider(__dirname + '/public'));
-});
-
-app.get('/', function(req, res) {
-    db.hgetall("fosscomm2011:sessions:current", function (err, curdata) {
-        res.render('index.ejs', {
-            locals: { cursessions: curdata }
-        });
-    });
-});
-
-if (!module.parent) {
-    app.listen(3000);
-    console.log("server listening on port %d", app.address().port)
-}
-
-var socket = io.listen(app);
-var pubsub = redis.createClient();
-
-pubsub.subscribe("fosscomm2011:pubsub");
 socket.on('connection', function(client) {
 
-    client.on('message', function(msg) { })
-    client.on('disconnect', function() { })
+    client.on('message', function (data) {
+        var message = JSON.parse(data);
 
-    pubsub.on("message", function (channel, data) {
-        var msg = JSON.parse(data);
-        if (msg.event == 'add') {
-            db.hget("fosscomm2011:sessions:all", msg.id, function(err, data){
+        if (message.event == 'delete') {
+            db.hdel('fosscomm2011:sessions:current', message.id);
+            socket.broadcast(JSON.stringify(message));
+        };
+
+        if (message.event == 'add') {
+            db.hget('fosscomm2011:sessions:all', message.id, function(err, data) {
+                db.hset('fosscomm2011:sessions:current', message.id, data);
                 var reply = {
-                    event: "add",
-                    id: msg.id,
-                    data: JSON.parse(data)
+                    event: 'add',
+                    id: message.id,
+                    session: JSON.parse(data)
                 };
-                client.send(JSON.stringify(reply));
+                socket.broadcast(JSON.stringify(reply));
             });
-        } else if (msg.event == 'delete') {
-            client.send(data);
         };
     });
+
 });
