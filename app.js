@@ -8,7 +8,10 @@ server = http.createServer(function(req, res) {
 });
 server.listen(8000);
   
-var socket = io.listen(server); 
+// -- Needs testing.
+// -- See: https://github.com/LearnBoost/Socket.IO-node/pull/176
+var socket = io.listen(server, { origins:'localhost:5000' }); 
+
 var db = redis.createClient();
 
 db.on('error', function (err) {
