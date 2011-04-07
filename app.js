@@ -10,7 +10,7 @@ server.listen(8000);
   
 // -- Needs testing.
 // -- See: https://github.com/LearnBoost/Socket.IO-node/pull/176
-var socket = io.listen(server, { origins:'localhost:5000' }); 
+var socket = io.listen(server, { origins:'localhost:*' });
 
 var db = redis.createClient();
 

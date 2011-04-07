@@ -1,0 +1,74 @@
+<!DOCTYPE html> 
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>FOSSCOMM 2011 - Now Happening</title>
+    <link href='http://fonts.googleapis.com/css?family=Ubuntu&subset=greek,latin' rel='stylesheet' type='text/css'>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.5.min.js"></script>
+    <script type="text/javascript" src="http://localhost:8000/socket.io/socket.io.js"></script>
+    <style type='text/css'>
+    body {
+        font-family: 'Ubuntu', arial, serif;
+        font-size: 1em;
+        margin: 20px 140px  20px 140px;
+        text-align: center;
+    }
+
+    #content { 
+        width: 100%;
+        padding: 0px;
+        text-align: center;
+        overflow: auto;
+    }
+    
+    ul {
+        list-style-type: none;
+    }
+    
+    ul li {
+        padding-bottom: 20px;
+        border-bottom: thick dotted #ccc;
+    }    
+    </style>
+    
+    <script type="text/javascript">
+    $(document).ready(function() {
+        var socket = new io.Socket('localhost', { port: 8000 });
+
+        socket.connect();
+        
+        socket.on('message', function(data) {
+            var message = JSON.parse(data);
+
+            if (message.event == 'delete') {
+                $('li#' + message.id).hide();
+            };
+            
+            if (message.event == 'add') {
+                $('#sessions').append('<li id="' + message.id + '">'
+                    + '<h1>' + message.session.speaker + '</h1>'
+                    + '<h2>' + message.session.title + '</h2>'
+                    + '<h2><em>' + message.session.location + '</em></h2>'
+                    + '</li>'
+                );
+            };
+        });
+    });
+    </script>
+</head>
+    
+<body>
+    <div id='content'>
+        <ul id='sessions'>
+            <li><h1>Now Happening</h1></li>
+            {% for k, v in sessions.items() %}
+            <li id="{{ k }}">
+                <h1>{{ v.speaker }}</h1>
+                <h2>{{ v.title }}</h2>
+                <h2><em>@{{ v.location }}</em></h2>
+            </li>
+            {% endfor %}
+        <ul>
+    </div>
+</body>
+</html>
