@@ -7,49 +7,40 @@
     <script type="text/javascript" src="http://code.jquery.com/jquery-1.5.min.js"></script>
     <script type="text/javascript" src="http://code.jquery.com/mobile/1.0a3/jquery.mobile-1.0a3.min.js"></script>
     <script type="text/javascript" src="http://localhost:8000/socket.io/socket.io.js"></script>
-    <script type="text/javascript">
-    $(document).ready(function() {
-        var socket = new io.Socket('localhost', { port: 8000 });
-        
-        socket.connect();
+    <script type="text/javascript" src='http://jashkenas.github.com/coffee-script/extras/coffee-script.js'></script>
+    <script type='text/coffeescript'>
+        $ ->
+            socket = new io.Socket('localhost', { port: 8000 })
 
-        $('#current-sessions li a.delete').live('click', function() {
-            var message = {
-                event: 'delete',
-                id: $(this).parent().attr('id')
-            };
-            socket.send(JSON.stringify(message));
-        });
-    
-        $('#all-sessions li a.add').live('click', function() {
-            var message = {
-                event: 'add',
-                id: $(this).parent().parent().parent().parent().attr('id')
-            };
-            socket.send(JSON.stringify(message));
-        });
-        
-        socket.on('message', function(data) {
-            var message = JSON.parse(data);
-
-            if (message.event == 'delete') {
-                $('li#' + message.id).hide();
-            };
+            socket.connect()
             
-            if (message.event == 'add') {
-                $('#current-sessions').append('<li id="' + message.id + '">'
-                    + '<h3><a>' + message.session.speaker + '</a></h3>'
-                    + '<p><strong>' + message.session.title + '</strong></p>'
-                    + '<p class="ui-li-aside"><strong>' + message.session.location + '</strong></p>'
-                    + '<a class="delete" data-rel="dialog" data-transition="slideup">Delete</a>'
-                    + '</li>'
-                );
-                $('#current-sessions').listview('refresh');
-                $.mobile.changePage('#home');
-            };
-        });
-        
-    });
+            $('#current-sessions li a.delete').live 'click', ->
+                message =
+                    event: 'delete'
+                    id: $(this).parent().attr('id')
+                socket.send JSON.stringify message
+
+            $('#all-sessions li a.add').live 'click', ->
+                message =
+                    event: 'add'
+                    id: $(this).parent().parent().parent().parent().attr('id')
+                socket.send JSON.stringify message
+
+            socket.on 'message', (data) ->
+                message = JSON.parse(data)
+            
+                if message.event == 'delete'
+                    $('li#' + message.id).hide()
+            
+                if message.event == 'add'
+                    $('#current-sessions').append '<li id="' + message.id + '">' +
+                        '<h3><a>' + message.session.speaker + '</a></h3>' +
+                        '<p><strong>' + message.session.title + '</strong></p>' +
+                        '<p class="ui-li-aside"><strong>' + message.session.location + '</strong></p>' +
+                        '<a class="delete" data-rel="dialog" data-transition="slideup">Delete</a>' +
+                        '</li>'
+                    $('#current-sessions').listview 'refresh'
+                    $.mobile.changePage '#home'
     </script>
 </head>
 
