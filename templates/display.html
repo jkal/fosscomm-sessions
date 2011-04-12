@@ -1,11 +1,10 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
     <title>FOSSCOMM 2011 - Now Happening</title>
     <link href='http://fonts.googleapis.com/css?family=Ubuntu&subset=greek,latin' rel='stylesheet' type='text/css'>
     <script type="text/javascript" src="http://code.jquery.com/jquery-1.5.min.js"></script>
-    <script type="text/javascript" src="http://localhost:8000/socket.io/socket.io.js"></script>
     <style type='text/css'>
     body {
         font-family: 'Ubuntu', arial, serif;
@@ -14,49 +13,56 @@
         text-align: center;
     }
 
-    #content { 
+    #content {
         width: 100%;
         padding: 0px;
         text-align: center;
         overflow: auto;
     }
-    
+
     ul {
         list-style-type: none;
     }
-    
+
     ul li {
         padding-bottom: 20px;
         border-bottom: thick dotted #ccc;
-    }    
+    }
     </style>
-    
-    <script type="text/javascript">
+
+    <script type='text/javascript'>
+    var settings = {
+        host: 'localhost',
+        port: '8000'
+    };
     $(document).ready(function() {
-        var socket = new io.Socket('localhost', { port: 8000 });
+        $.getScript('http://' + settings.host + ':' + settings.port + '/socket.io/socket.io.js', function() {
 
-        socket.connect();
-        
-        socket.on('message', function(data) {
-            var message = JSON.parse(data);
+            var socket = new io.Socket(settings.host, { port: settings.port });
 
-            if (message.event == 'delete') {
-                $('li#' + message.id).hide();
-            };
-            
-            if (message.event == 'add') {
-                $('#sessions').append('<li id="' + message.id + '">'
-                    + '<h1>' + message.session.speaker + '</h1>'
-                    + '<h2>' + message.session.title + '</h2>'
-                    + '<h2><em>' + message.session.location + '</em></h2>'
-                    + '</li>'
-                );
-            };
+            socket.connect();
+
+            socket.on('message', function(data) {
+                var message = JSON.parse(data);
+
+                if (message.event == 'delete') {
+                    $('li#' + message.id).remove();
+                };
+
+                if (message.event == 'add') {
+                    $('#sessions').append('<li id="' + message.id + '">'
+                        + '<h1>' + message.session.speaker + '</h1>'
+                        + '<h2>' + message.session.title + '</h2>'
+                        + '<h2><em>' + message.session.location + '</em></h2>'
+                        + '</li>'
+                    );
+                };
+            });
         });
     });
     </script>
 </head>
-    
+
 <body>
     <div id='content'>
         <ul id='sessions'>

@@ -1,4 +1,4 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
@@ -6,34 +6,40 @@
 	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.0a3/jquery.mobile-1.0a3.min.css" />
     <script type="text/javascript" src="http://code.jquery.com/jquery-1.5.min.js"></script>
     <script type="text/javascript" src="http://code.jquery.com/mobile/1.0a3/jquery.mobile-1.0a3.min.js"></script>
-    <script type="text/javascript" src="http://localhost:8000/socket.io/socket.io.js"></script>
     <script type="text/javascript">
+    var settings = {
+        host: 'localhost',
+        port: '8000'
+    };
     $(document).ready(function() {
-        var socket = new io.Socket('localhost', { port: 8000 });
+        $.getScript('http://' + settings.host + ':' + settings.port + '/socket.io/socket.io.js', function() {
 
-        socket.connect();
-        
-        socket.on('message', function(data) {
-            var message = JSON.parse(data);
+            var socket = new io.Socket(settings.host, { port: settings.port });
 
-            if (message.event == 'delete') {
-                $('li#' + message.id).hide();
-            };
-            
-            if (message.event == 'add') {
-                $('#sessions').append('<li id="' + message.id + '">'
-                    + '<h3>' + message.session.speaker + '</h3>'
-                    + '<p><strong>' + message.session.title + '</strong></p>'
-                    + '<p class="ui-li-aside"><strong>' + message.session.location + '</strong></p>'
-                    + '</li>'
-                );
-                $('#sessions').listview('refresh');
-            };
+            socket.connect();
+
+            socket.on('message', function(data) {
+                var message = JSON.parse(data);
+
+                if (message.event == 'delete') {
+                    $('li#' + message.id).remove();
+                };
+
+                if (message.event == 'add') {
+                    $('#sessions').append('<li id="' + message.id + '">'
+                        + '<h3>' + message.session.speaker + '</h3>'
+                        + '<p><strong>' + message.session.title + '</strong></p>'
+                        + '<p class="ui-li-aside"><strong>' + message.session.location + '</strong></p>'
+                        + '</li>'
+                    );
+                    $('#sessions').listview('refresh');
+                };
+            });
         });
     });
     </script>
 </head>
-    
+
 <body>
     <div data-role="page" data-theme="d" id="home">
         <div data-role="content">
@@ -44,9 +50,9 @@
                         <h3>{{ v.speaker }}</h3>
                         <p><strong>{{ v.title }}</strong></p>
                         <p class="ui-li-aside"><strong>{{ v.location }}</strong></p>
-                    </li>                    
+                    </li>
                 {% endfor %}
-    		</ul>    	
+            </ul>
     	</div>
     </div>
 </body>

@@ -1,66 +1,72 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
     <title>FOSSCOMM 2011 - Admin</title>
-	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.0a3/jquery.mobile-1.0a3.min.css" />
+    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.0a3/jquery.mobile-1.0a3.min.css" />
     <script type="text/javascript" src="http://code.jquery.com/jquery-1.5.min.js"></script>
     <script type="text/javascript" src="http://code.jquery.com/mobile/1.0a3/jquery.mobile-1.0a3.min.js"></script>
-    <script type="text/javascript" src="http://localhost:8000/socket.io/socket.io.js"></script>
     <script type="text/javascript">
+    var settings = {
+        host: 'localhost',
+        port: '8000'
+    };
     $(document).ready(function() {
-        var socket = new io.Socket('localhost', { port: 8000 });
-        
-        socket.connect();
 
-        $('#current-sessions li a.delete').live('click', function() {
-            var message = {
-                event: 'delete',
-                id: $(this).parent().attr('id')
-            };
-            socket.send(JSON.stringify(message));
-        });
-    
-        $('#all-sessions li a.add').live('click', function() {
-            var message = {
-                event: 'add',
-                id: $(this).parent().parent().parent().parent().attr('id')
-            };
-            socket.send(JSON.stringify(message));
-        });
-        
-        socket.on('message', function(data) {
-            var message = JSON.parse(data);
+        $.getScript('http://' + settings.host + ':' + settings.port + '/socket.io/socket.io.js', function() {
 
-            if (message.event == 'delete') {
-                $('li#' + message.id).hide();
-            };
-            
-            if (message.event == 'add') {
-                $('#current-sessions').append('<li id="' + message.id + '">'
-                    + '<h3><a>' + message.session.speaker + '</a></h3>'
-                    + '<p><strong>' + message.session.title + '</strong></p>'
-                    + '<p class="ui-li-aside"><strong>' + message.session.location + '</strong></p>'
-                    + '<a class="delete" data-rel="dialog" data-transition="slideup">Delete</a>'
-                    + '</li>'
-                );
-                $('#current-sessions').listview('refresh');
-                $.mobile.changePage('#home');
-            };
+            var socket = new io.Socket(settings.host, { port: settings.port });
+
+            socket.connect();
+
+            $('#current-sessions li a.delete').live('click', function() {
+                var message = {
+                    event: 'delete',
+                    id: $(this).parent().attr('id')
+                };
+                socket.send(JSON.stringify(message));
+            });
+
+            $('#all-sessions li a.add').live('click', function() {
+                var message = {
+                    event: 'add',
+                    id: $(this).parent().parent().parent().parent().attr('id')
+                };
+                socket.send(JSON.stringify(message));
+            });
+
+            socket.on('message', function(data) {
+                var message = JSON.parse(data);
+
+                if (message.event == 'delete') {
+                    $('li#' + message.id).remove();
+                };
+
+                if (message.event == 'add') {
+                    $('#current-sessions').append('<li id="' + message.id + '">'
+                        + '<h3><a>' + message.session.speaker + '</a></h3>'
+                        + '<p><strong>' + message.session.title + '</strong></p>'
+                        + '<p class="ui-li-aside"><strong>' + message.session.location + '</strong></p>'
+                        + '<a class="delete" data-rel="dialog" data-transition="slideup">Delete</a>'
+                        + '</li>'
+                    );
+                    $('#current-sessions').listview('refresh');
+                    $.mobile.changePage('#home');
+                };
+            });
         });
-        
     });
     </script>
 </head>
 
 <body>
     <div data-role="page" data-theme="d" id="home">
-        
+
         <div data-role="header" data-theme="a">
             <h1>Update Sessions</h1>
             <a href="#add" data-role="button" data-icon="plus">Add</a>
         </div>
-        
+
         <div data-role="content">
     		<ul id="current-sessions" data-role="listview" data-split-icon="delete" data-split-theme="d">
     			<li data-role="list-divider">Now Happening (Edit)</li>
@@ -70,17 +76,17 @@
                         <p><strong>{{ v.title }}</strong></p>
                         <p class="ui-li-aside"><strong>{{ v.location }}</strong></p>
                         <a class="delete" data-rel="dialog" data-transition="slideup">Delete</a>
-                    </li>                    
+                    </li>
                 {% endfor %}
     		</ul>
     	</div>
-        
+
     </div>
 
     <div data-role="page" data-theme="d" id="add">
 
-        <div data-role="header" data-theme="b"> 
-    		<h1>All presentations</h1> 
+        <div data-role="header" data-theme="b">
+            <h1>All presentations</h1>
     	</div>
 
     	<div data-role="content">
@@ -91,9 +97,9 @@
                         <h3><a class="add">{{ v.speaker }}</a></h3>
                         <p><strong></strong>{{ v.title }}</p>
                         <p class="ui-li-aside"><strong>{{ v.location }}</strong></p>
-                    </li>                    
+                    </li>
                 {% endfor %}
-		    </ul>		
+		    </ul>
         </div>
 
     </div>
