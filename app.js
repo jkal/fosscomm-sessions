@@ -21,7 +21,7 @@ db.on('error', function (err) {
 
 var cl = new xmpp.Client({
     jid: 'admin@fosscomm.ceid.upatras.gr',
-    password: 'q1w2e3r4'
+    password: ''
 });
 
 cl.on('error', function(e) {
