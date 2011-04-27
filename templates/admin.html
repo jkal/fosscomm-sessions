@@ -44,9 +44,9 @@
 
                 if (message.event == 'add') {
                     $('#current-sessions').append('<li id="' + message.id + '">'
-                        + '<h3><a>' + message.session.speaker + '</a></h3>'
-                        + '<p><strong>' + message.session.title + '</strong></p>'
-                        + '<p class="ui-li-aside"><strong>' + message.session.location + '</strong></p>'
+                        + '<h3><a>' + message.session.title + '</a></h3>'
+                        + '<p><strong>' + message.session.speaker + '</strong></p>'
+                        + '<p class="ui-li-aside"><strong>' + message.session.room + '</strong></p>'
                         + '<a class="delete" data-rel="dialog" data-transition="slideup">Delete</a>'
                         + '</li>'
                     );
@@ -72,9 +72,9 @@
     			<li data-role="list-divider">Now Happening (Edit)</li>
     			{% for k, v in current.items() %}
                     <li id="{{ k }}">
-                        <h3><a>{{ v.speaker }}</a></h3>
-                        <p><strong>{{ v.title }}</strong></p>
-                        <p class="ui-li-aside"><strong>{{ v.location }}</strong></p>
+                        <h3><a>{{ v.title }}</a></h3>
+                        <p><strong>{{ v.speaker }}</strong></p>
+                        <p class="ui-li-aside"><strong>{{ v.room }}</strong></p>
                         <a class="delete" data-rel="dialog" data-transition="slideup">Delete</a>
                     </li>
                 {% endfor %}
@@ -94,9 +94,9 @@
                 <li data-role="list-divider">Saturday, May 7<span class="ui-li-count">{{ sessions|length }}</span></li>
                 {% for k, v in sessions.items() %}
                     <li id="{{ k }}">
-                        <h3><a class="add">{{ v.speaker }}</a></h3>
-                        <p><strong></strong>{{ v.title }}</p>
-                        <p class="ui-li-aside"><strong>{{ v.location }}</strong></p>
+                        <h3><a class="add">{{ v.title }}</a></h3>
+                        <p><strong></strong>{{ v.speaker }}</p>
+                        <p class="ui-li-aside"><strong>{{ v.room }}</strong></p>
                     </li>
                 {% endfor %}
 		    </ul>

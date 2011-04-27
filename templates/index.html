@@ -27,9 +27,9 @@
 
                 if (message.event == 'add') {
                     $('#sessions').append('<li id="' + message.id + '">'
-                        + '<h3>' + message.session.speaker + '</h3>'
-                        + '<p><strong>' + message.session.title + '</strong></p>'
-                        + '<p class="ui-li-aside"><strong>' + message.session.location + '</strong></p>'
+                        + '<h3>' + message.session.title + '</h3>'
+                        + '<p><strong>' + message.session.speaker + '</strong></p>'
+                        + '<p class="ui-li-aside"><strong>' + message.session.room + '</strong></p>'
                         + '</li>'
                     );
                     $('#sessions').listview('refresh');
@@ -47,9 +47,9 @@
     			<li data-role="list-divider">Now Happening</li>
                 {% for k, v in sessions.items() %}
                     <li id="{{ k }}">
-                        <h3>{{ v.speaker }}</h3>
-                        <p><strong>{{ v.title }}</strong></p>
-                        <p class="ui-li-aside"><strong>{{ v.location }}</strong></p>
+                        <h3>{{ v.title }}</h3>
+                        <p><strong>{{ v.speaker }}</strong></p>
+                        <p class="ui-li-aside"><strong>{{ v.room }}</strong></p>
                     </li>
                 {% endfor %}
             </ul>
