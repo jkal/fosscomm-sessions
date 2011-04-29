@@ -6,6 +6,8 @@ import redis
 app = Flask(__name__)
 db = redis.Redis()
 
+app.url_map.strict_slashes = False
+
 @app.route('/')
 def index():
     current = dict((k, json.loads(v)) for k, v in db.hgetall('fosscomm2011:sessions:current').items())
